@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+requests
+python-dotenv
+PyMuPDF==1.21.1
+python-docx
+langchain
+langchain-community
+sentence-transformers
+faiss-cpu

@@ -1,0 +1,9 @@
+You are a helpful assistant. Use the following resume to answer the question.
+
+Resume:
+{resume_text}
+
+Question:
+{question}
+
+Please give a single, direct answer without repeating the question or adding commentary.

@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "id": "input_text",
+      "type": "input",
+      "name": "Article Input",
+      "output": "text"
+    },
+    {
+      "id": "extract_claim",
+      "type": "http_request",
+      "name": "Claim Extraction",
+      "method": "POST",
+      "url": "https://api.together.ai/api/exaone-3-5-32b-instruct",
+      "headers": {
+        "Authorization": "Bearer {{TOGETHER_API_KEY}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "prompt": "Extract the main factual claim from the following text:\n{{input_text}}",
+        "max_tokens": 200
+      },
+      "input": ["input_text.output"],
+      "output": "claim"
+    },
+    {
+      "id": "factcheck_search",
+      "type": "http_request",
+      "name": "Google FactCheck Search",
+      "method": "GET",
+      "url": "https://factchecktools.googleapis.com/v1alpha1/claims:search?query={{extract_claim.claim}}&key={{GOOGLE_FACTCHECK_KEY}}",
+      "input": ["extract_claim.claim"],
+      "output": "factcheck_results"
+    },
+    {
+      "id": "verdict_generation",
+      "type": "http_request",
+      "name": "Verdict Generation",
+      "method": "POST",
+      "url": "https://api.together.ai/api/exaone-3-5-32b-instruct",
+      "headers": {
+        "Authorization": "Bearer {{TOGETHER_API_KEY}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "prompt": "Using the claim:\n{{extract_claim.claim}}\nand the following fact-check results:\n{{factcheck_search.factcheck_results}}\nProvide a short verdict: True, False, or Misleading, and a trust score 0-100.",
+        "max_tokens": 150
+      },
+      "input": ["extract_claim.claim", "factcheck_search.factcheck_results"],
+      "output": "verdict"
+    },
+    {
+      "id": "output_node",
+      "type": "output",
+      "name": "Output",
+      "input": ["verdict_generation.verdict"]
+    }
+  ],
+  "connections": [
+    ["input_text.output", "extract_claim.input"],
+    ["extract_claim.claim", "factcheck_search.input"],
+    ["extract_claim.claim", "verdict_generation.input"],
+    ["factcheck_search.factcheck_results", "verdict_generation.input"],
+    ["verdict_generation.verdict", "output_node.input"]
+  ],
+  "settings": {
+    "name": "Misinformation Checker1",
+    "description": "Checks news claims for misinformation using Together AI and Google Fact Check API"
+  }
+}
