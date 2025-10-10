@@ -1,0 +1,27 @@
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+
+# Hugging Face cache
+hf_cache/
+__pycache__
+# You can also ignore huggingface hub cache globally if needed:
+# ~/.cache/huggingface/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment files (optional, if you keep secrets in them)
+.env
